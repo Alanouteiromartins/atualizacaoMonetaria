@@ -1,0 +1,101 @@
+<h1>Cálculo de Atualização Monetária</h1>
+
+<!-- IDENTIFICAÇÃO -->
+<h2>Identificação do cálculo</h2>
+<div class="field-group">
+  <div class="field">
+    <label>Descrição</label>
+    <input type="text" [value]="descricao()" (input)="descricao.set($any($event.target).value)" placeholder="Ex: Cotas condominiais">
+  </div>
+  <div class="field">
+    <label>Processo nº</label>
+    <input type="text" [value]="processo()" (input)="processo.set($any($event.target).value)" placeholder="Ex: 123456789">
+  </div>
+</div>
+
+
+<div class="field-group">
+  <div class="field">
+    <label>Credor</label>
+    <input type="text" [value]="credor()" (input)="credor.set($any($event.target).value)" placeholder="Nome do credor">
+  </div>
+  <div class="field">
+    <label>Devedor</label>
+    <input type="text" [value]="devedor()" (input)="devedor.set($any($event.target).value)" placeholder="Nome do devedor">
+  </div>
+</div>
+
+<!-- CORREÇÃO MONETÁRIA -->
+<h2>Correção monetária</h2>
+<div class="field-group">
+  <div class="field">
+    <label>Valor base (R$)</label>
+    <input type="number" [value]="valor()" (input)="valor.set($any($event.target).value)" step="0.01" placeholder="0,00">
+  </div>
+  <div class="field">
+    <label>Data inicial</label>
+    <input type="date" [value]="dataInicial()" (input)="dataInicial.set($any($event.target).value)">
+  </div>
+  <div class="field">
+    <label>Data final</label>
+    <input type="date" [value]="dataFinal()" (input)="dataFinal.set($any($event.target).value)">
+  </div>
+  
+</div>
+<div class="field-group">
+  <div class="field">
+  <label>Índice</label>
+  <select [value]="indice()" (change)="indice.set($any($event.target).value)">
+    <option *ngFor="let nome of indicesDisponiveis" [value]="nome">{{ nome }}</option>
+  </select>
+</div>
+
+</div>
+
+<!-- JUROS -->
+<h2>Juros</h2>
+<div class="field-group">
+  <div class="field">
+    <label>Taxa de juros (%)</label>
+    <div class="juros-config">
+      <input type="number" [value]="juros()" (input)="juros.set($any($event.target).value)" step="0.01" placeholder="Ex: 1,00">
+      <select [value]="periodoJuros()" (change)="periodoJuros.set($any($event.target).value)">
+        <option value="mensal">Mensal</option>
+        <option value="anual">Anual</option>
+        <option value="diario">Diário</option>
+      </select>
+      <select [value]="tipoJuros()" (change)="tipoJuros.set($any($event.target).value)">
+        <option value="simples">Simples</option>
+        <option value="composto">Composto</option>
+      </select>
+      <div class="field" style="margin-top:10px;">
+  <label>
+    <input type="checkbox" [checked]="proRata()" (change)="proRata.set($any($event.target).checked)">
+    Pro rata
+  </label>
+</div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MULTA / HONORÁRIOS -->
+<h2>Multa e Honorários</h2>
+<div class="field-group">
+  <div class="field">
+    <label>Multa (%)</label>
+    <input type="number" [value]="multa()" (input)="multa.set($any($event.target).value)" step="0.01" placeholder="Ex: 2,00">
+  </div>
+  <div class="field">
+    <label>Honorários (%)</label>
+    <input type="number" [value]="honorarios()" (input)="honorarios.set($any($event.target).value)" step="0.01" placeholder="Ex: 10,00">
+  </div>
+</div>
+
+<div class="actions">
+  <button id="limpar" (click)="limpar()">Limpar</button>
+  <button (click)="calcular()">Calcular</button>
+  @if(resultado()){
+    <button>Exportar PDF</button>
+  }
+</div>

@@ -1,0 +1,118 @@
+/* Título principal */
+h1 {
+  text-align: center;
+  color: var(--azul-escuro);
+  margin: 0 0 20px 0;
+}
+
+/* Títulos de seção */
+h2 {
+  color: #445569;
+  font-size: 1.15rem;
+  margin: 26px 0 10px 0;
+  border-bottom: 2px solid var(--dourado);
+  padding-bottom: 6px;
+}
+
+/* Grupos de campos (linhas) */
+.field-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 12px;
+}
+
+/* Campo individual */
+.field {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* Rótulos */
+label {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* Inputs e selects */
+input, select {
+  padding: 10px 12px;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  background-color: #fdfdfd;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+
+input:hover, select:hover {
+  background: #fff;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--azul-escuro);
+  box-shadow: 0 0 0 3px rgba(29,14,70,0.12);
+}
+
+/* Linha de configurações de juros */
+.juros-config {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.juros-config select {
+  width: 130px;
+}
+
+/* Área do botão */
+.actions {
+  text-align: center;
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* Botão principal */
+button {
+  background: var(--azul-escuro);
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform .06s ease, background .2s ease, box-shadow .2s ease;
+  box-shadow: 0 6px 14px rgba(29,14,70,0.18);
+}
+
+#limpar {
+  background-color: var(--cinza-claro);
+  color: var(--azul-escuro);
+  border: 1px solid var(--azul-escuro);
+}
+
+button:hover {
+  background: #2e1b6d;
+  box-shadow: 0 8px 18px rgba(29,14,70,0.22);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .juros-config {
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+
+  .juros-config input, .juros-config select {
+    width: 100%;
+  }
+}

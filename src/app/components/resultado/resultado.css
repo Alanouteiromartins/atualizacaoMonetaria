@@ -1,0 +1,36 @@
+.resultado {
+  background: #fff;
+  border-left: 6px solid var(--azul-escuro);
+  padding: 20px 24px;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  animation: fadeIn .35s ease;
+  margin-top: 20px;
+}
+
+.resultado h3 {
+  color: var(--azul-escuro);
+  margin: 0 0 10px 0;
+}
+
+.resultado p {
+  margin: 6px 0;
+  line-height: 1.4;
+}
+
+.resultado hr {
+  border: none;
+  border-top: 1px dashed #ddd;
+  margin: 14px 0;
+}
+
+.valor-final {
+  color: var(--azul-escuro);
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

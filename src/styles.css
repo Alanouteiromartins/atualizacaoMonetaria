@@ -1,0 +1,20 @@
+/* You can add global styles to this file, and also import other style files */
+:root {
+  --azul-escuro: #1d0e46;
+  --dourado: #e8d166;
+  --cinza-claro: #f4f6f8;
+  --texto: #333;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+  background: var(--cinza-claro);
+  color: var(--texto);
+}
