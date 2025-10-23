@@ -2,6 +2,7 @@
   command = "ng build --configuration production"
   publish = "dist/atualizacaoMonetaria/browser"
   functions = "netlify/functions"
+  environment = { NETLIFY_USE_ANGULAR_RUNTIME = "false" }
 
 [[redirects]]
   from = "/api/*"
