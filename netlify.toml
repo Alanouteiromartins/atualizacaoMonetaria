@@ -1,5 +1,5 @@
 [build]
-  publish = "dist/atualizacaoMonotaria/browser"
+  publish = "dist/atualizacaoMonetaria/browser"
   functions = "netlify/functions"
 
 [[redirects]]
