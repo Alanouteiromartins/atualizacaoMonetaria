@@ -1,6 +1,4 @@
+<app-header />
 <div class="container">
-  <app-form-atualizacao [resultado]="resultado" />
-  @if (resultado()) {
-    <app-resultado [dados]="resultado()" />
-  }
+  <router-outlet />
 </div>

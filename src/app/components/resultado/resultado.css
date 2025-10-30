@@ -1,36 +1,44 @@
 .resultado {
   background: #fff;
   border-left: 6px solid var(--azul-escuro);
-  padding: 20px 24px;
+  padding: 24px 28px;
   border-radius: 14px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.08);
   animation: fadeIn .35s ease;
   margin-top: 20px;
+  font-family: Arial, sans-serif;
 }
 
 .resultado h3 {
   color: var(--azul-escuro);
-  margin: 0 0 10px 0;
+  margin: 18px 0 12px 0;
+  font-size: 1.05rem;
 }
 
-.resultado p {
-  margin: 6px 0;
-  line-height: 1.4;
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
 }
 
-.resultado hr {
-  border: none;
-  border-top: 1px dashed #ddd;
-  margin: 14px 0;
+.tabela td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #e6e6e6;
+  font-size: 0.95rem;
+}
+
+.tabela td:first-child {
+  width: 55%;
+}
+
+.tabela tr.total td {
+  border-top: 2px solid var(--azul-escuro);
+  font-weight: bold;
+  padding-top: 12px;
 }
 
 .valor-final {
   color: var(--azul-escuro);
   font-size: 1.35rem;
   font-weight: 700;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
 }

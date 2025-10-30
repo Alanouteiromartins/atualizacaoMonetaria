@@ -30,7 +30,7 @@
 <div class="field-group">
   <div class="field">
     <label>Valor base (R$)</label>
-    <input type="number" [value]="valor()" (input)="valor.set($any($event.target).value)" step="0.01" placeholder="0,00">
+    <input type="text" [value]="valorFormatado()" (input)="onValorInput($event)" placeholder="0,00">
   </div>
   <div class="field">
     <label>Data inicial</label>
@@ -99,3 +99,7 @@
     <button>Exportar PDF</button>
   }
 </div>
+
+@if(resultado()){
+  <app-resultado [dados]="resultado()" />
+}

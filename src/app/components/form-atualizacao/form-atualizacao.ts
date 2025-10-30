@@ -1,16 +1,19 @@
-import { Component, signal, Input } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Indice } from '../../services/indice';
+import { Resultado } from '../resultado/resultado';
+import { CalculoService } from '../../services/calculo';
+import { Calculo } from '../../models/calculo.interface';
 
 @Component({
   selector: 'app-form-atualizacao',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Resultado],
   templateUrl: './form-atualizacao.html',
   styleUrls: ['./form-atualizacao.css']
 })
 export class FormAtualizacao {
-  @Input() resultado: any; // signal vindo do app.ts
+  resultado = signal<any | null>(null);
 
   descricao = signal('');
   processo = signal('');
@@ -20,15 +23,15 @@ export class FormAtualizacao {
   dataInicial = signal('');
   dataFinal = signal('');
   indice = signal('IPCA (IBGE)');
-  juros = signal<number>(0);
-  periodoJuros = signal('mensal');
-  tipoJuros = signal('simples');
-  multa = signal<number>(0);
-  honorarios = signal<number>(0);
+  juros = signal<number | null>(null);
+  periodoJuros = signal<'diario' | 'mensal' | 'anual'>('mensal');
+  tipoJuros = signal<'simples' | 'composto'>('simples');
+  multa = signal<number | null>(null);
+  honorarios = signal<number | null>(null);
   proRata = signal(false)
   indicesDisponiveis: string[] = [];
 
-  constructor(private indiceService: Indice) {
+  constructor(private indiceService: Indice, private calculoService: CalculoService) {
     this.indicesDisponiveis = this.indiceService.getIndicesDisponiveis();
   }
 
@@ -50,129 +53,74 @@ export class FormAtualizacao {
   }
 
   calcular() {
-    const valorBase = Number(this.valor());
-    if (!valorBase) {
-      alert("Informe o valor base!");
-      return;
-    }
+  const params: Calculo = {
+    valorBase: Number(this.valor()),
+    dataInicial: new Date(this.dataInicial()),
+    dataFinal: new Date(this.dataFinal()),
+    indice: this.indice(),
+    proRata: this.proRata(),
+    juros: Number(this.juros()),
+    periodoJuros: this.periodoJuros(),
+    tipoJuros: this.tipoJuros(),
+    multa: Number(this.multa()),
+    honorarios: Number(this.honorarios())
+  };
 
-    const juros = Number(this.juros());
-    const multa = Number(this.multa());
-    const honorarios = Number(this.honorarios());
-    const tipo = this.tipoJuros();
-    const periodo = this.periodoJuros();
+  if (!params.valorBase) return alert("Informe o valor base!");
+  if(isNaN(params.dataInicial.getTime()) || isNaN(params.dataFinal.getTime())) return alert("Informe as datas")
 
-    // 🔹 Datas
-    const dataInicial = new Date(this.dataInicial());
-    const dataFinal = new Date(this.dataFinal());
-    if (isNaN(dataInicial.getTime()) || isNaN(dataFinal.getTime())) {
-      alert("Informe as datas inicial e final corretamente!");
-      return;
-    }
-    if (dataFinal <= dataInicial) {
-      alert("A data final deve ser posterior à data inicial!");
-      return;
-    }
+  this.indiceService.getFatorAcumulado(params.indice, this.dataInicial(), this.dataFinal(), false)
+    .subscribe(fatorIndice => {
 
-    // 🔹 Cálculo do tempo decorrido
-    const diffMs = dataFinal.getTime() - dataInicial.getTime();
-    const diffDias = diffMs / (1000 * 60 * 60 * 24);
-    const diffMeses = diffDias / 30.4375;
-    const diffAnos = diffMeses / 12;
+      const valorCorrigido = params.valorBase * fatorIndice;
+      const { fatorTempo, diasExibir, mesesExibir, anosExibir } = this.calculoService.calcularFatorTempo(params);
 
-    let fatorTempo = 0;
-    if (this.proRata()) {
-      switch (periodo) {
-        case 'diario': fatorTempo = diffDias; break;
-        case 'mensal': fatorTempo = diffMeses; break;
-        case 'anual': fatorTempo = diffAnos; break;
-      }
-    } else {
-      switch (periodo) {
-        case 'diario': fatorTempo = Math.floor(diffDias); break;
-        case 'mensal': fatorTempo = Math.floor(diffMeses); break;
-        case 'anual': fatorTempo = Math.floor(diffAnos); break;
-      }
-    }
+      const valorJuros = this.calculoService.calcularJuros(valorCorrigido, params);
+      const valorMulta = this.calculoService.calcularMulta(valorCorrigido, params.multa);
 
-    // 🔹 Busca o fator de correção monetária
-    this.indiceService
-      .getFatorAcumulado(this.indice(), this.dataInicial(), this.dataFinal(), this.proRata())
-      .subscribe(fatorIndice => {
+      const subtotal = valorCorrigido + valorJuros + valorMulta;
+      const valorHonorarios = this.calculoService.calcularHonorarios(subtotal, params.honorarios);
+      const valorFinal = subtotal + valorHonorarios;
 
-        // ================================
-        // 🧮 ETAPA 1: Correção monetária
-        // ================================
-        const valorCorrigido = valorBase * fatorIndice;
-        const variacaoPercentual = (fatorIndice - 1) * 100;
-
-        // ================================
-        // 🧮 ETAPA 2: Juros
-        // ================================
-        let valorJuros = 0;
-        if (juros > 0) {
-          if (tipo === 'simples') {
-            valorJuros = valorCorrigido * (juros / 100) * fatorTempo;
-          } else {
-            const fatorJuros = Math.pow(1 + juros / 100, fatorTempo);
-            valorJuros = valorCorrigido * (fatorJuros - 1);
-          }
-        }
-
-        // ================================
-        // 🧮 ETAPA 3: Multa (sobre o valor corrigido)
-        // ================================
-        const valorMulta = valorCorrigido * (multa / 100);
-
-        // ================================
-        // 🧮 ETAPA 4: Subtotal (corrigido + juros + multa)
-        // ================================
-        const subtotal = valorCorrigido + valorJuros + valorMulta;
-
-        // ================================
-        // 🧮 ETAPA 5: Honorários (sobre subtotal)
-        // ================================
-        const valorHonorarios = subtotal * (honorarios / 100);
-        const valorFinal = subtotal + valorHonorarios;
-
-        // ================================
-        // 🧾 Resultado final
-        // ================================
-        this.resultado.set({
-          descricao: this.descricao(),
-          processo: this.processo(),
-          credor: this.credor(),
-          devedor: this.devedor(),
-          valorBase,
-          indice: this.indice(),
-          fatorIndice: fatorIndice.toFixed(6),
-          variacaoPercentual: variacaoPercentual.toFixed(4) + '%',
-          valorCorrigido,
-          valorJuros,
-          valorMulta,
-          valorHonorarios,
-          juros,
-          periodo,
-          tipo,
-          multa,
-          honorarios,
-          diasDecorridos: Math.round(diffDias),
-          mesesDecorridos: diffMeses.toFixed(2),
-          anosDecorridos: diffAnos.toFixed(2),
-          valorAtualizado: valorFinal
-        });
-
-        // 🔍 Log opcional
-        console.groupCollapsed('💰 [Cálculo detalhado]');
-        console.log('Valor base:', valorBase.toFixed(2));
-        console.log('Fator índice:', fatorIndice.toFixed(6));
-        console.log('Valor corrigido:', valorCorrigido.toFixed(2));
-        console.log('Juros:', valorJuros.toFixed(2));
-        console.log('Multa:', valorMulta.toFixed(2));
-        console.log('Subtotal:', subtotal.toFixed(2));
-        console.log('Honorários:', valorHonorarios.toFixed(2));
-        console.log('Valor final:', valorFinal.toFixed(2));
-        console.groupEnd();
+      this.resultado.set({
+        ...params,
+        fatorIndice,
+        valorCorrigido,
+        valorJuros,
+        valorMulta,
+        valorHonorarios,
+        diasDecorridos: diasExibir,
+        mesesDecorridos: mesesExibir,
+        anosDecorridos: anosExibir,
+        valorAtualizado: valorFinal,
+        variacaoPercentual: (((fatorIndice - 1) * 100).toFixed(6)) + '%'
       });
+    });
+}
+
+
+
+  valorFormatado = computed(() => {
+    if (this.valor() == null) return '';
+    return this.valor()?.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  });
+
+  onValorInput(event: any) {
+    let raw = event.target.value;
+
+    // Remove tudo que não for número
+    raw = raw.replace(/[^\d]/g, '');
+
+    // Converte p/ centavos → número
+    const numero = Number(raw) / 100;
+
+    // Atualiza signal
+    this.valor.set(numero);
+
+    // Reescreve formatado no input
+    event.target.value = this.valorFormatado();
   }
 }

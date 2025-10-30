@@ -1,35 +1,88 @@
 <div class="resultado">
-  <h3>Resultado do cálculo</h3>
 
-  <p><strong>Processo:</strong> {{dados.processo}}</p>
-  <p><strong>Credor:</strong> {{dados.credor}}</p>
-  <p><strong>Devedor:</strong> {{dados.devedor}}</p>
+  <h3>Dados básicos informados para cálculo</h3>
 
-  <p><strong>Valor base:</strong> R$ {{dados.valorBase | number:'1.2-2'}}</p>
+  <table class="tabela">
+    <tr>
+      <td><strong>Valor nominal</strong></td>
+      <td>R$ {{ dados.valorBase | number:'1.2-2' }}</td>
+    </tr>
+    <tr>
+      <td><strong>Indexador e metodologia</strong></td>
+      <td>{{ dados.indice }} — calculado pelo critério mês cheio</td>
+    </tr>
+    <tr>
+      <td><strong>Período da correção</strong></td>
+      <td>{{ dados.dataInicial | date:'dd/MM/yyyy' }} a {{ dados.dataFinal | date:'dd/MM/yyyy' }}</td>
+    </tr>
+    <tr>
+      <td><strong>Taxa de juros</strong></td>
+      <td>{{ dados.juros }}% {{ dados.tipoJuros }} ({{ dados.periodoJuros }})</td>
+    </tr>
+    <tr>
+      <td><strong>Período dos juros</strong></td>
+      <td>{{ dados.dataInicial | date:'dd/MM/yyyy' }} a {{ dados.dataFinal | date:'dd/MM/yyyy' }}</td>
+    </tr>
+    <tr>
+      <td><strong>Multa</strong></td>
+      <td>{{ dados.multa }}%</td>
+    </tr>
+    <tr>
+      <td><strong>Honorários</strong></td>
+      <td>{{ dados.honorarios }}%</td>
+    </tr>
+  </table>
 
-  <!-- 🔹 Novo bloco: Índice de correção -->
-  <p>
-    <strong>Índice aplicado:</strong> {{dados.indice}} <br>
-    <small>
-      Correção acumulada de {{dados.variacaoPercentual}} no período
-      (fator {{dados.fatorIndice}})
-    </small>
-  </p>
+  <h3>Dados calculados</h3>
 
-  <!-- 🔹 Juros, multa, honorários -->
-  <p><strong>Juros:</strong> {{dados.juros}}% ({{dados.periodo}}, {{dados.tipo}})</p>
-  <p><strong>Multa:</strong> {{dados.multa}}%</p>
-  <p><strong>Honorários:</strong> {{dados.honorarios}}%</p>
+  <table class="tabela">
+    <tr>
+      <td><strong>Fator de correção do período</strong></td>
+      <td>{{ dados.diasDecorridos }} dias</td>
+      <td>{{ dados.fatorIndice }}</td>
+    </tr>
 
-  <!-- 🔹 Informações de tempo -->
-  <p><strong>Período decorrido:</strong> 
-    {{dados.diasDecorridos}} dias ≈ {{dados.mesesDecorridos}} meses ({{dados.anosDecorridos}} anos)
-  </p>
+    <tr>
+      <td><strong>Percentual correspondente</strong></td>
+      <td>{{ dados.diasDecorridos }} dias</td>
+      <td>{{ dados.variacaoPercentual }}</td>
+    </tr>
 
-  <hr>
+    <tr>
+      <td><strong>Valor corrigido para {{ dados.dataFinal | date:'dd/MM/yyyy' }}</strong></td>
+      <td>(=)</td>
+      <td>R$ {{ dados.valorCorrigido | number:'1.2-2' }}</td>
+    </tr>
 
-  <!-- 🔹 Valor final -->
-  <p><strong>Valor atualizado: </strong>
-    <span class="valor-final">R$ {{dados.valorAtualizado | number:'1.2-2'}}</span>
-  </p>
+    <tr>
+      <td><strong>Juros ({{ dados.diasDecorridos }} dias)</strong></td>
+      <td>(+)</td>
+      <td>R$ {{ dados.valorJuros | number:'1.2-2' }}</td>
+    </tr>
+
+    <tr>
+      <td><strong>Multa ({{ dados.multa }}%)</strong></td>
+      <td>(+)</td>
+      <td>R$ {{ dados.valorMulta | number:'1.2-2' }}</td>
+    </tr>
+
+    <tr>
+      <td><strong>Sub-Total</strong></td>
+      <td>(=)</td>
+      <td>R$ {{ (dados.valorCorrigido + dados.valorJuros + dados.valorMulta) | number:'1.2-2' }}</td>
+    </tr>
+
+    <tr>
+      <td><strong>Honorários ({{ dados.honorarios }}%)</strong></td>
+      <td>(+)</td>
+      <td>R$ {{ dados.valorHonorarios | number:'1.2-2' }}</td>
+    </tr>
+
+    <tr class="total">
+      <td><strong>Valor Total</strong></td>
+      <td>(=)</td>
+      <td><span class="valor-final">R$ {{ dados.valorAtualizado | number:'1.2-2' }}</span></td>
+    </tr>
+  </table>
+
 </div>

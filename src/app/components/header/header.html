@@ -1,0 +1,28 @@
+<div class="container">
+    <div class="header">
+        <div class="logo">
+            <img src="logoCris.png" alt="logo">
+        </div>
+
+        <button class="menu-toggle" (click)="toggleMenu()">
+            @if(!open){
+                <span>☰</span>
+            }
+            @else{
+                <span>✖</span>
+            }
+        
+        </button>
+
+        <!-- Overlay escuro -->
+         @if(open){
+            <div class="overlay" (click)="toggleMenu()"></div>
+         }
+        <nav>
+            <ul [class.show]="open">
+                <li><a routerLink="/atualizacao" routerLinkActive="ativo">Atualização monetária</a></li>
+                <li><a routerLink="/teste" routerLinkActive="ativo" href="#">Em breve</a></li>
+            </ul>
+        </nav>
+    </div>
+</div>
