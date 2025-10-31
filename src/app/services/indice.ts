@@ -179,9 +179,28 @@ export class Indice {
         console.groupEnd();
 
         if (!dentro.length) return 1;
-        const fator = dentro.reduce((acc, p) => acc * (1 + p.valorNum / 100), 1);
-        console.log(`[IndiceService:getFatorAcumulado] Fator acumulado calculado:`, fator);
+        let fator = 1;
+
+        // meses cheios do meio (igual já faz)
+        for (const p of dentro) {
+          fator *= (1 + p.valorNum / 100);
+        }
+
+        // Se for pró-rata → ajustar pontas
+        if (proRata) {
+          const diasNoMesIni = new Date(iniUser.getFullYear(), iniUser.getMonth() + 1, 0).getDate();
+          const diasUsadosIni = diasNoMesIni - iniUser.getDate() + 1;
+          const indiceIni = dentro[0].valorNum / 100;
+          fator *= Math.pow(1 + indiceIni, diasUsadosIni / diasNoMesIni);
+
+          const diasNoMesFim = new Date(fimUser.getFullYear(), fimUser.getMonth() + 1, 0).getDate();
+          const diasUsadosFim = fimUser.getDate();
+          const indiceFim = dentro[dentro.length - 1].valorNum / 100;
+          fator *= Math.pow(1 + indiceFim, diasUsadosFim / diasNoMesFim);
+        }
+
         return fator;
+
       }),
       catchError(err => {
         console.error('❌ Erro ao calcular fator acumulado:', err, { url });

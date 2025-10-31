@@ -6,7 +6,7 @@ export class CalculoService {
 
   calcularFatorTempo(params: Calculo) {
     const diffMs = params.dataFinal.getTime() - params.dataInicial.getTime();
-    const diffDias = diffMs / (1000 * 60 * 60 * 24);
+    const diffDias = Math.floor(diffMs / 86400000);
     const diffMeses = diffDias / 30.4375;
     const diffAnos = diffMeses / 12;
 
@@ -48,28 +48,28 @@ export class CalculoService {
   calcularJuros(valorCorrigido: number, params: Calculo) {
     if (params.juros <= 0) return 0;
 
-    // DRCalc: juros contam a partir do dia seguinte
     const inicio = new Date(params.dataInicial);
     inicio.setDate(inicio.getDate() + 1);
 
-    // DRCalc: até o dia da data final inclusive
     const fim = new Date(params.dataFinal);
     fim.setDate(fim.getDate() + 1);
 
     const diffMs = fim.getTime() - inicio.getTime();
     const diasJuros = diffMs / (1000 * 60 * 60 * 24);
 
-    // Converte dias → meses pró-rata
-    const mesesProRata = diasJuros / 30.4375;
-
-    if (params.tipoJuros === 'simples') {
+    // 🔹 Se for pró-rata → divide por 30
+    if (params.proRata) {
+      const mesesProRata = diasJuros / 30;
       return valorCorrigido * (params.juros / 100) * mesesProRata;
     }
 
-    const fator = Math.pow(1 + params.juros / 100, mesesProRata);
-    return valorCorrigido * (fator - 1);
+    // 🔹 Sem pró-rata → só conta meses cheios
+    const mesesCheios =
+      (fim.getFullYear() - inicio.getFullYear()) * 12 +
+      (fim.getMonth() - inicio.getMonth()) -
+      (fim.getDate() < inicio.getDate() ? 1 : 0);
+    return valorCorrigido * (params.juros / 100) * mesesCheios;
   }
-
 
   calcularMulta(valorCorrigido: number, multa: number) {
     return valorCorrigido * (multa / 100);
