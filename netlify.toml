@@ -1,8 +1,7 @@
 [build]
   command = "ng build --configuration production"
   publish = "dist/atualizacaoMonetaria/browser"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+  
+[[edge_functions]]
+  path = "/*"
+  function = "angular-ssr"
