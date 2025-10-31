@@ -2,8 +2,13 @@
   command = "ng build --configuration production"
   publish = "dist/atualizacaoMonetaria/browser"
 
+# Desativa o Angular SSR automático do Netlify
+[[plugins]]
+  package = "@netlify/angular-runtime"
+  skip = true
+
+# SPA redirects (necessário para rotas funcionarem)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
