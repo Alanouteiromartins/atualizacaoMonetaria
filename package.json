@@ -4,10 +4,12 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --configuration production",
+    "build:dev": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:atualizacaoMonetaria": "node dist/atualizacaoMonetaria/server/server.mjs"
+    "serve:ssr:atualizacaoMonetaria": "node dist/atualizacaoMonetaria/server/server.mjs",
+    "postbuild": "node scripts/netlify-postbuild.mjs"
   },
   "prettier": {
     "printWidth": 100,
