@@ -1,5 +1,6 @@
 [build]
   command = "ng build --configuration production"
+  command = "npm run build"
   publish = "dist/atualizacaoMonetaria/browser"
   
 [[edge_functions]]
